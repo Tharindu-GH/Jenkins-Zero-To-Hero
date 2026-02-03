@@ -30,14 +30,19 @@ pipeline {
     }
 
     stage('Static Code Analysis') {
-      steps {
-        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_TOKEN')]) {
-          sh '''
-            mvn sonar:sonar \
-              -Dsonar.login="$SONAR_TOKEN" \
-              -Dsonar.host.url="$SONAR_URL"
-          '''
+        environment {
+            SONAR_URL = "http://54.165.90.56:9000"
         }
+        steps {
+            withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+              dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') { // Make sure you run the SonarQube command from the right directory
+                sh '''
+                  mvn sonar:sonar \
+                    -Dsonar.login=$SONAR_AUTH_TOKEN \
+                    -Dsonar.host.url=$SONAR_URL
+                 '''
+              }
+          }
       }
     }
 
