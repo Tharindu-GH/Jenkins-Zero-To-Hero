@@ -1,13 +1,13 @@
-# You can change this base image to anything else
-# But make sure to use the correct version of Java
-FROM adoptopenjdk/openjdk11:alpine-jre
+# Use Java 17 runtime
+FROM eclipse-temurin:17-jre-alpine
 
-# Simply the artifact path
+# Artifact path
 ARG artifact=target/spring-boot-web.jar
 
 WORKDIR /opt/app
 
+# Copy the built jar
 COPY ${artifact} app.jar
 
-# This should not be changed
+# Start the app
 ENTRYPOINT ["java","-jar","app.jar"]
