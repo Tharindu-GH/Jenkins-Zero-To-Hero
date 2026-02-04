@@ -17,7 +17,11 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        echo 'Checkout completed'
+            script {
+              echo "Checking out the repository"
+              sh 'git --version'
+              sh 'ls -al'
+        }
         }
       }
 
