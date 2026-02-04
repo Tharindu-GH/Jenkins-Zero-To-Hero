@@ -66,20 +66,23 @@ pipeline {
 
     stage('Update Deployment File') {
       steps {
-        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-          sh '''
-            git config user.email "tharindu.mycloud@gmail.com"
-            git config user.name "Tharindu-GH"
-
-            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" \
-              ../spring-boot-app-manifests/deployment.yml
-
-            git add ../spring-boot-app-manifests/deployment.yml
-            git commit -m "Update deployment image to ${BUILD_NUMBER}" || echo "No changes"
-            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git main
-          '''
+          withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+            // Navigate to the correct directory where your Git repository is initialized
+            dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') { 
+              sh '''
+                git config user.email "tharindu.mycloud@gmail.com"
+                git config user.name "Tharindu-GH"
+      
+                sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" \
+                  ../spring-boot-app-manifests/deployment.yml
+      
+                git add ../spring-boot-app-manifests/deployment.yml
+                git commit -m "Update deployment image to ${BUILD_NUMBER}" || echo "No changes"
+                git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git main
+              '''
+            }
+          }
         }
-      }
     }
 
   }
