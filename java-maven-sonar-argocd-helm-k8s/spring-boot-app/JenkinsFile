@@ -17,11 +17,18 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        // Checkout the Git repository to the workspace
-        git branch: 'main', url: 'https://github.com/Tharindu-GH/Jenkins-Zero-To-Hero.git'
+        script {
+          echo "Checking out the repository"
+          try {
+            git branch: 'main', url: 'https://github.com/Tharindu-GH/Jenkins-Zero-To-Hero.git'
+          } catch (Exception e) {
+            echo "Git checkout failed: ${e.getMessage()}"
+            currentBuild.result = 'FAILURE'
+            throw e
+          }
         }
       }
-    }
+
 
     stage('Build and Test') {
       steps {
