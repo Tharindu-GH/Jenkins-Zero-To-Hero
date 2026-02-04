@@ -71,32 +71,40 @@ pipeline {
 
     stage('Update Deployment File') {
       steps {
-            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-                  dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') { 
-                    script {
-                      // Mark Jenkins workspace as a safe directory for Git
-                      sh 'git config --global --add safe.directory /home/ubuntu/.jenkins/workspace/my-cicd-pipeline-demo'
-                      
-                      // Ensure Git is initialized in this directory
-                      sh 'git status'
-                      sh 'git config user.email "tharindu.mycloud@gmail.com"'
-                      sh 'git config user.name "Tharindu-GH"'
-            
-                      // Pull the latest changes to ensure you're up-to-date
-                      sh 'git pull origin main'
-            
-                      // Update the deployment file
-                      sh '''
-                        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" ../spring-boot-app-manifests/deployment.yml
+              withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                    dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                      script {
+                        // Mark Jenkins workspace as a safe directory for Git
+                        sh 'git config --global --add safe.directory /home/ubuntu/.jenkins/workspace/my-cicd-pipeline-demo'
                         
-                        # Add, commit, and push changes to GitHub
-                        git add ../spring-boot-app-manifests/deployment.yml
-                        git commit -m "Update deployment image to ${BUILD_NUMBER}" || echo "No changes"
-                        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git main
-                      '''
+                        // Ensure Git is initialized in this directory
+                        sh 'git status'
+                        
+                        // Configure Git user information
+                        sh 'git config user.email "tharindu.mycloud@gmail.com"'
+                        sh 'git config user.name "Tharindu-GH"'
+              
+                        // Fetch the latest changes from the remote 'main' branch
+                        sh 'git fetch origin'
+              
+                        // Checkout the 'main' branch (if not already on it)
+                        sh 'git checkout main'
+              
+                        // Merge the latest changes from the remote 'main' branch
+                        sh 'git merge origin/main'
+              
+                        // Update the deployment file
+                        sh '''
+                          sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" ../spring-boot-app-manifests/deployment.yml
+                          
+                          # Add, commit, and push changes to GitHub
+                          git add ../spring-boot-app-manifests/deployment.yml
+                          git commit -m "Update deployment image to ${BUILD_NUMBER}" || echo "No changes"
+                          git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git main
+                        '''
+                      }
                     }
                   }
-                }
             }
         }
 
