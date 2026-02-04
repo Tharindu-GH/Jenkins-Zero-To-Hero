@@ -17,8 +17,8 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
-          sh 'mvn clean package'
+        // Checkout the Git repository to the workspace
+        git branch: 'main', url: 'https://github.com/Tharindu-GH/Jenkins-Zero-To-Hero.git'
         }
       }
     }
