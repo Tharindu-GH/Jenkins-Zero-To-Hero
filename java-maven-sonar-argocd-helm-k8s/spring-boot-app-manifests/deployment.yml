@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: spring-boot-app
-        image: tharindu-gh/ultimate-cicd:replaceImageTag
+        image: tharindumycloud/ultimate-cicd:replaceImageTag
         ports:
         - containerPort: 8080
