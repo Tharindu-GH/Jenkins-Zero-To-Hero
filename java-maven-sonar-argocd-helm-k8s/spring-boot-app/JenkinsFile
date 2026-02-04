@@ -72,21 +72,27 @@ pipeline {
     stage('Update Deployment File') {
       steps {
           withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-            // Navigate to the correct directory where your Git repository is initialized
-            dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') { 
-              sh '''
-                git config user.email "tharindu.mycloud@gmail.com"
-                git config user.name "Tharindu-GH"
-      
-                sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" \
-                  ../spring-boot-app-manifests/deployment.yml
-      
-                git add ../spring-boot-app-manifests/deployment.yml
-                git commit -m "Update deployment image to ${BUILD_NUMBER}" || echo "No changes"
-                git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git main
-              '''
-            }
-          }
+                // Navigate to the directory where the Git repo is located
+                dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') { 
+                  script {
+                    // Ensure Git is initialized in this directory
+                    sh 'git status'
+                    sh 'git config user.email "tharindu.mycloud@gmail.com"'
+                    sh 'git config user.name "Tharindu-GH"'
+          
+                    // Update the deployment file using the correct path
+                    sh '''
+                      # Update the deployment image tag
+                      sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" ../spring-boot-app-manifests/deployment.yml
+                      
+                      # Add, commit, and push changes to GitHub
+                      git add ../spring-boot-app-manifests/deployment.yml
+                      git commit -m "Update deployment image to ${BUILD_NUMBER}" || echo "No changes"
+                      git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git main
+                    '''
+                  }
+                }
+              }
         }
     }
 
