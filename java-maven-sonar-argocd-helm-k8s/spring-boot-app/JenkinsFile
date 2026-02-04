@@ -17,7 +17,9 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        echo 'Checkout completed'
+        dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+          sh 'mvn clean package'
+        }
       }
     }
 
