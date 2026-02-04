@@ -17,15 +17,7 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        script {
-          echo "Checking out the repository"
-          try {
-            git branch: 'main', url: 'https://github.com/Tharindu-GH/Jenkins-Zero-To-Hero.git'
-          } catch (Exception e) {
-            echo "Git checkout failed: ${e.getMessage()}"
-            currentBuild.result = 'FAILURE'
-            throw e
-          }
+        echo 'Checkout completed'
         }
       }
 
